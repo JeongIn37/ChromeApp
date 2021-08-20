@@ -58,3 +58,8 @@ if(saveToDos !== null){
     toDos = parsedToDos;
     parsedToDos.forEach(paintToDo);
 }
+
+
+function awesomeFilter(){
+    s
+}
