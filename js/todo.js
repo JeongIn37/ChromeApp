@@ -4,7 +4,7 @@ const toDoList = document.querySelector("#todo-list");
 
 const TODOS_KEY = "todos";
 
-const toDos = [];
+let toDos = [];
 
 function saveToDos(){
     localStorage.setItem("todos", JSON.stringify(toDos));
@@ -13,18 +13,21 @@ function saveToDos(){
 function deleteToDo(event){
     const li = event.target.parentElement;
     li.remove();
+    toDos = toDos.filter(toDo => toDo.id !== parseInt(li.id));
+    saveToDos();
 }
 
 function paintToDo(newTodo){
     const li =  document.createElement("li");
+    li.id = newTodo.id;
     const span = document.createElement("span");
-    li.appendChild(span);
+    span.innerText = newTodo.text;
     const button = document.createElement("button");
     button.innerText = "❌";
     button.addEventListener("click", deleteToDo);
     //<li><span></span></li> 구조로 만들기
+    li.appendChild(span);
     li.appendChild(button);
-    span.innerText = newTodo;
     toDoList.appendChild(li);
 }
 
@@ -35,21 +38,25 @@ function handleToDoSubmit(event){
     const newTodo = toDoInput.value;
     //input value 비우기 
     toDoInput.value=""; 
+
+    //object {id:~~, text:"blah"} 이런 형태로 만들기
+    const newTodoObj = {
+        text: newTodo,
+        id: Date.now(), //Date.now()는 현재시간을 밀리 초(1/1000) 단위로 주는 함수 -> 랜덤처럼 사용하기 좋음
+    };
+
     //toDos array에 newToDo push
-    toDos.push(newTodo);
-    paintToDo(newTodo);
+    toDos.push(newTodoObj);
+    paintToDo(newTodoObj);
     saveToDos();
 }
 
 toDoForm.addEventListener("submit", handleToDoSubmit);
 
-
-function sayHello(item){
-    console.log("this is the turn of:", item);
-}
-
 const savedToDos = localStorage.getItem(TODOS_KEY);
+
 if(saveToDos !== null){
     const parsedToDos = JSON.parse(savedToDos);
-    parsedToDos.forEach((item)=>console.log("this is the turn of"), item);
+    toDos = parsedToDos;
+    parsedToDos.forEach(paintToDo);
 }
